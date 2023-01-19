@@ -1,10 +1,10 @@
-import psycopg2
+import psycopg
 from decouple import config
 
 DATABASE_URL = config('DATABASE_URL')
 
 #add to db
-conn = psycopg2.connect(DATABASE_URL)
+conn = psycopg.connect(DATABASE_URL)
 
 with conn.cursor() as cur:
     #cur.execute("DROP TABLE Posts;")
@@ -18,9 +18,14 @@ with conn.cursor() as cur:
         """)
     cur.execute("""
         
-        INSERT INTO Posts (message, name, reply_to) VALUES ( 'Heloo sadasd ', 'sadads', NULL );
+        INSERT INTO Posts (message, name, reply_to) VALUES ( 'Heloo sadasd ', 'sadads', NULL ) RETURNING PostID;
                 
                 """)
+    
+    res = cur.fetchall()
+    conn.commit()
+    print(res[0][0])
+    
     cur.execute("""
         
         SELECT * FROM Posts;
