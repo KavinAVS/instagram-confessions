@@ -3,6 +3,7 @@ from waitress import serve
 import imageMaker.pil_autowrap as pilwrap
 import logging
 from decouple import config
+import psycopg2
 
 DATABASE_URL = config('DATABASE_URL')
 INSTA_USER = config('INSTA_USER')
@@ -31,6 +32,13 @@ def post():
     post_num="post#0000"
     
     #add to db
+    conn = psycopg2.connect(DATABASE_URL, sslrootcert="./ca.crt")
+
+    with conn.cursor() as cur:
+        cur.execute("SELECT now()")
+        res = cur.fetchall()
+        conn.commit()
+        print(res)
     
     pilwrap.make_text_image(content["message"], name, post_num, (100,100,0,255), post_num)
     
