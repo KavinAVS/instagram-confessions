@@ -1,30 +1,48 @@
 <!doctype html>
 <html>
     <head>
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body, html{
+                background-image: linear-gradient(rgb(243, 186, 232), rgb(255, 255, 174));
+                background-repeat: no-repeat;
+                background-size: 100% 100vh;
+            }
+
+            #responseForm, #recentSection{
+                background-color: rgba(255, 255, 255, 0.5);
+                border-radius: 7px;
+                border: 0px;
+            }
+
+        </style>
     </head>
     <body>
         
         <div class="container">
             
-            <div class="row">
-                <form id="responseForm" method="POST" action="/" class="col-sm-12 col-md-5">
-                    <h5>Leave a message</h5>
-                    <div class="form-floating">
-                        <textarea class="form-control" placeholder="message" id="responseText" style="height: 100px" required></textarea>
-                        <label for="floatingTextarea2">Message*</label>
+            <div class="row mt-4">
+                <form id="responseForm" method="POST" action="/" class="card col-12 col-md-5 p-3 pt-2">
+                    <div class="card-body">
+                        <h5>Leave a message</h5>
+                        <div id="alert-holder" class="mt-2"></div>
+                        <div class="form-floating mt-2">
+                            <textarea class="form-control" placeholder="message" id="responseText" style="height: 100px" required></textarea>
+                            <label for="floatingTextarea2">Message*</label>
+                        </div>
+                        <div class="form-floating mt-2">
+                            <input type="text" class="form-control" id="uname" placeholder="Anonymous">
+                            <label for="uname">Name</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3" id="btn-submit">Post</button>
                     </div>
-                    <div class="form-floating">
-                        <input type="text" class="form-control" id="uname" placeholder="Anonymous">
-                        <label for="uname">Name</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-
                 </form>
 
-                <div class="col-sm-12 col-md-5">
-                    <h5>Recent Posts</h5>
-
+                <div class="col-12 col-md-6 mt-2 mt-md-0 ms-md-3 p-3" id="recentSection">
+                    <h5 class="pt-2">Recent Posts</h5>
+                    <div id="recents-alert-holder" class="mt-1"></div>
+                    <div id="recents-holder" class="mt-1 list-group"></div>
+                    <div class="text-center"><button type="button" class="btn btn-secondary btn-sm">Load More</button></div>
                 </div>
             </div>
         </div>

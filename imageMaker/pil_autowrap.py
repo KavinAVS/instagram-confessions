@@ -223,10 +223,10 @@ def fit_text(
 def make_text_image(text, name, post_num, bg_color, filename, width=1024, height=1024) -> None:
     """Generate test images for text auto-wrapping."""
 
-    font = ImageFont.truetype("fonts/HelveticaNeueLight.ttf", size=40)
+    font = ImageFont.truetype( os.path.join(os.path.dirname(__file__), "fonts/HelveticaNeueLight.ttf"), size=40)
     
     with Image.new(
-        mode="RGBA", size=(width, height), color=bg_color
+        mode="RGB", size=(width, height), color=bg_color
     ) as image:
         
         draw = ImageDraw.Draw(image)
@@ -276,5 +276,5 @@ def make_text_image(text, name, post_num, bg_color, filename, width=1024, height
         if not os.path.isdir("./temp"):
             os.makedirs("./temp")
             
-        output_path = os.path.join(os.path.dirname(__file__), f'temp/{filename}.png')
-        image.save(output_path)
+        output_path = os.path.join(os.path.dirname(__file__), f'temp/{filename}.jpg')
+        image.save(output_path, "JPEG", quality=100)
