@@ -113,13 +113,13 @@ def recents():
             else:
                 max_id = startid
                 
-            min_id = max( (max_id - 30) , 0)
+            min_id = max( (max_id - 4) , 0)
             cur.execute(f"SELECT PostID,message,name FROM Posts WHERE PostID BETWEEN {min_id} AND {max_id};")
             res = cur.fetchall()
             conn.commit()
             
-    except Exception as e:
-        print(f"Failed to get from db {e}")
+    except:
+        print(f"Failed to get from db")
         return {"ret": False, "error":"dbfail"}
     
     return {"ret": True, "data": res}

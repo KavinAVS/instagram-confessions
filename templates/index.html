@@ -6,13 +6,18 @@
             body, html{
                 background-image: linear-gradient(rgb(243, 186, 232), rgb(255, 255, 174));
                 background-repeat: no-repeat;
-                background-size: 100% 100vh;
+                background-attachment:fixed;
+            }
+
+            * {
+                box-sizing: border-box;
             }
 
             #responseForm, #recentSection{
                 background-color: rgba(255, 255, 255, 0.5);
                 border-radius: 7px;
                 border: 0px;
+                height: max-content;
             }
 
         </style>
@@ -21,7 +26,7 @@
         
         <div class="container">
             
-            <div class="row mt-4">
+            <div class="row justify-content-md-center my-4">
                 <form id="responseForm" method="POST" action="/" class="card col-12 col-md-5 p-3 pt-2">
                     <div class="card-body">
                         <h5>Leave a message</h5>
@@ -38,11 +43,11 @@
                     </div>
                 </form>
 
-                <div class="col-12 col-md-6 mt-2 mt-md-0 ms-md-3 p-3" id="recentSection">
+                <div class="col-12 col-md-6 mt-2 mt-md-0 ms-md-3 p-3 flex-grow-1" id="recentSection">
                     <h5 class="pt-2">Recent Posts</h5>
                     <div id="recents-alert-holder" class="mt-1"></div>
                     <div id="recents-holder" class="mt-1 list-group"></div>
-                    <div class="text-center"><button type="button" class="btn btn-secondary btn-sm">Load More</button></div>
+                    <div class="text-center"><button type="button" id="btn-loadmore" class="btn btn-secondary btn-sm mt-3">Load More</button></div>
                 </div>
             </div>
         </div>
