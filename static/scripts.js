@@ -50,6 +50,12 @@ responseForm.addEventListener('submit', function(e) {
                 case "uploadfail":
                     errorMessage = "Upload to Instagram Failed";
                     break;
+                case "msgtoolong":
+                    errorMessage = "Message too long";
+                    break;
+                case "nametoolong":
+                    errorMessage = "Name too long";
+                    break;
                 default:
                     errorMessage = "Unexpected error occured";
             }

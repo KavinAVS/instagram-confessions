@@ -21,10 +21,6 @@ logger.setLevel(logging.INFO)
 app = Flask(__name__)
 limiter = Limiter(get_remote_address, app=app)
 
-# Login to Instagram
-cl = Client()
-cl.login(INSTA_USER, INSTA_PWD)
-
 # Login to DB
 conn = psycopg.connect(DATABASE_URL)
 with conn.cursor() as cur:
@@ -38,6 +34,9 @@ with conn.cursor() as cur:
     """)
     conn.commit()
 
+# Login to Instagram
+cl = Client()
+cl.login(INSTA_USER, INSTA_PWD)
 
 @app.route('/', methods=["GET"])
 def main():
@@ -51,9 +50,13 @@ def post():
     
     if("message" not in content or content["message"] == ""):
         return {"ret": False, "error":"nomsg"}
+    elif(len(content["message"]) > 800):
+        return {"ret": False, "error":"msgtoolong"}
     
     if("name" not in content or content["name"] == ""):
         name = "Anon"
+    elif(len(content["name"]) > 50):
+        return {"ret": False, "error":"nametoolong"}
     else:
         name = content["name"]
         
@@ -128,5 +131,5 @@ if __name__ == "__main__":
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.INFO)
     
-    #serve(app, host='0.0.0.0', port=80, threads=8)
-    app.run(host='0.0.0.0', port=80)
+    serve(app, host='0.0.0.0', port=80, threads=8)
+    #app.run(host='0.0.0.0', port=80)
