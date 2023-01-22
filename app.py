@@ -8,7 +8,6 @@ import logging
 from decouple import config
 from instagrapi import Client
 import psycopg
-import json
 import os
 
 DATABASE_URL = config('DATABASE_URL')
