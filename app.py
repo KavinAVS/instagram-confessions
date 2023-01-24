@@ -13,12 +13,11 @@ import os
 DATABASE_URL = config('DATABASE_URL')
 INSTA_USER = config('INSTA_USER')
 INSTA_PWD = config('INSTA_PWD')
+PORT = config('PORT')
 
 logger = logging.getLogger('instagrapi')
 logger.setLevel(logging.INFO)
 
-app = Flask(__name__)
-limiter = Limiter(get_remote_address, app=app)
 
 # Login to DB
 conn = psycopg.connect(DATABASE_URL)
@@ -32,6 +31,9 @@ with conn.cursor() as cur:
         );
     """)
     conn.commit()
+
+app = Flask(__name__)
+limiter = Limiter(get_remote_address, app=app)
 
 # Login to Instagram
 cl = Client()
@@ -130,5 +132,5 @@ if __name__ == "__main__":
     logger = logging.getLogger('waitress')
     logger.setLevel(logging.INFO)
     
-    serve(app, host='0.0.0.0', port=80, threads=8)
+    serve(app, host='0.0.0.0', port=PORT, threads=8)
     #app.run(host='0.0.0.0', port=80)
