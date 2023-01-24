@@ -15,9 +15,10 @@ INSTA_USER = config('INSTA_USER')
 INSTA_PWD = config('INSTA_PWD')
 PORT = config('PORT')
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 L = logging.getLogger(__name__)
 logging.getLogger('instagrapi').setLevel(logging.INFO)
+logging.getLogger('urllib3').setLevel(logging.INFO)
 
 app = Flask(__name__)
 limiter = Limiter(get_remote_address, app=app)
