@@ -276,5 +276,5 @@ def make_text_image(text, name, post_num, bg_color, filename, width=1024, height
         if not os.path.isdir("./temp"):
             os.makedirs("./temp")
             
-        output_path = os.path.join(os.path.dirname(__file__), f'temp/{filename}.jpg')
+        output_path = f'./temp/{filename}.jpg'
         image.save(output_path, "JPEG", quality=100)

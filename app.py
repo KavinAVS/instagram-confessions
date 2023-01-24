@@ -15,9 +15,12 @@ INSTA_USER = config('INSTA_USER')
 INSTA_PWD = config('INSTA_PWD')
 PORT = config('PORT')
 
-logger = logging.getLogger('instagrapi')
-logger.setLevel(logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
+L = logging.getLogger(__name__)
+logging.getLogger('instagrapi').setLevel(logging.INFO)
 
+app = Flask(__name__)
+limiter = Limiter(get_remote_address, app=app)
 
 # Login to DB
 conn = psycopg.connect(DATABASE_URL)
@@ -32,8 +35,6 @@ with conn.cursor() as cur:
     """)
     conn.commit()
 
-app = Flask(__name__)
-limiter = Limiter(get_remote_address, app=app)
 
 # Login to Instagram
 cl = Client()
@@ -62,7 +63,7 @@ def post():
         name = content["name"]
         
     #add to DB
-    print("Adding to DB..")
+    L.debug("Adding to DB..")
     try:
         with conn.cursor() as cur:
             cur.execute(f"INSERT INTO Posts (message, name, reply_to) VALUES ('{content['message']}', '{name}', NULL) RETURNING PostID;")
@@ -70,33 +71,33 @@ def post():
             conn.commit()
             post_num=res[0][0]
     except:
-        print("Failed to add to db")
+        L.info("Failed to add to db")
         return {"ret": False, "error":"dbwrite"}
     
-    print("Added to DB, Making image..")
+    L.debug("Added to DB, Making image..")
     
     #Make the image
     post_str=f"post#{post_num:05d}"
     try:
         pilwrap.make_text_image(content["message"], name, post_str, (55, 118, 173), post_str)
     except Exception as e:
-        print("Failed make image", e)
+        L.info("Failed make image", e)
         return {"ret": False, "error":"makeimage"}
     
-    print("Image made, posting image..")
+    L.debug("Image made, posting image..")
     
     #post the image
     try:
-        cl.photo_upload(f"./imageMaker/temp/{post_str}.jpg", post_str)
+        cl.photo_upload(f"./temp/{post_str}.jpg", post_str)
     except:
-        print("Failed to post image")
+        L.info("Failed to post image")
         with conn.cursor() as cur:
             cur.execute(f"DELETE FROM Posts WHERE PostID='{post_num}';")
             conn.commit()
         return {"ret": False, "error":"uploadfail"}
     
     #delete the img from temp
-    os.remove(f"./imageMaker/temp/{post_str}.jpg")
+    os.remove(f"./temp/{post_str}.jpg")
     
     return {"ret": True, "post_num": post_num}
 
@@ -123,14 +124,12 @@ def recents():
             conn.commit()
             
     except:
-        print(f"Failed to get from db")
+        L.info(f"Failed to get from db")
         return {"ret": False, "error":"dbfail"}
     
     return {"ret": True, "data": res}
 
 if __name__ == "__main__":
-    logger = logging.getLogger('waitress')
-    logger.setLevel(logging.INFO)
     
     serve(app, host='0.0.0.0', port=PORT, threads=8)
     #app.run(host='0.0.0.0', port=80)
