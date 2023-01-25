@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import traceback
 
 from waitress import serve
 import imageMaker.pil_autowrap as pilwrap
@@ -111,11 +112,13 @@ def recents():
     
     try:
         with conn.cursor() as cur:
-            if(startid == -1):
+            if(startid > 0):
                 cur.execute("SELECT MAX(PostID) FROM Posts;")
                 res = cur.fetchall()
                 conn.commit()
                 max_id = res[0][0]
+                if(max_id is None):
+                    return {"ret": True}
             else:
                 max_id = startid
                 
@@ -124,8 +127,8 @@ def recents():
             res = cur.fetchall()
             conn.commit()
             
-    except:
-        L.info(f"Failed to get from db")
+    except Exception as e:
+        L.info(f"Failed to get from db {traceback.format_exc()}")
         return {"ret": False, "error":"dbfail"}
     
     return {"ret": True, "data": res}

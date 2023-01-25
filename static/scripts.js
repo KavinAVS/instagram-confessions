@@ -136,7 +136,8 @@ function getRecents(startID){
     })
     .then(response => response.json())
     .then((response)=>{
-        if(response.ret){
+        console.log(response);
+        if(response.ret && "data" in response){
             var data = response.data;
             last_id = data[0][0];
             for(var i = data.length-1; i >= 0; i--){
@@ -153,11 +154,15 @@ function getRecents(startID){
                     </div>
                 </div>`
             }
+        }else if(response.ret && !("data" in response)){
+            btnLoadmore.disabled = true;
+            btnLoadmore.innerHTML = `Load More`; 
         }else{
             recentAlertMessage(`Error: Failed to load data`, "danger");
         }
     })
     .catch(error => {
+        console.log(error);
         recentAlertMessage("Unexpected error occured, could not load data", "danger");
     });
 }
