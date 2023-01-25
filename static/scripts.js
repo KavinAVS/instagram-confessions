@@ -136,7 +136,6 @@ function getRecents(startID){
     })
     .then(response => response.json())
     .then((response)=>{
-        console.log(response);
         if(response.ret && "data" in response){
             var data = response.data;
             last_id = data[0][0];

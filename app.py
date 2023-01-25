@@ -112,7 +112,7 @@ def recents():
     
     try:
         with conn.cursor() as cur:
-            if(startid > 0):
+            if(startid < 0):
                 cur.execute("SELECT MAX(PostID) FROM Posts;")
                 res = cur.fetchall()
                 conn.commit()
