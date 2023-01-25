@@ -93,6 +93,7 @@ def post():
         cl.photo_upload(f"./temp/{post_str}.jpg", post_str)
     except:
         L.info("Failed to post image")
+        os.remove(f"./temp/{post_str}.jpg")
         with conn.cursor() as cur:
             cur.execute(f"DELETE FROM Posts WHERE PostID='{post_num}';")
             conn.commit()
