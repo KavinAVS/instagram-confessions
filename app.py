@@ -99,15 +99,23 @@ def post():
     L.debug("Image made, posting image..")
     
     #post the image
-    try:
-        cl.photo_upload(f"./temp/{post_str}.jpg", f"#utmconfess-{post_num:05d}")
-    except:
-        L.info(f"Failed to post image {traceback.format_exc()}")
-        os.remove(f"./temp/{post_str}.jpg")
-        with conn.cursor() as cur:
-            cur.execute(f"DELETE FROM Posts WHERE PostID='{post_num}';")
-            conn.commit()
-        return {"ret": False, "error":"uploadfail"}
+    i=2
+    while(i!=0):
+        try:
+            cl.photo_upload(f"./temp/{post_str}.jpg", f"#utmconfess{post_num:05d}")
+            break
+        except:
+            i-=1
+            if(i==0):
+                L.info(f"Failed to post image {traceback.format_exc()}")
+                os.remove(f"./temp/{post_str}.jpg")
+                with conn.cursor() as cur:
+                    cur.execute(f"DELETE FROM Posts WHERE PostID='{post_num}';")
+                    conn.commit()
+                return {"ret": False, "error":"uploadfail"}
+            else:
+                L.info(f"Retrying post again...")
+            
     
     #delete the img from temp
     os.remove(f"./temp/{post_str}.jpg")
