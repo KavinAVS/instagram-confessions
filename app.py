@@ -124,6 +124,8 @@ def recents():
                 max_id = startid
                 
             min_id = max( (max_id - 4) , 0)
+            
+        with conn.cursor() as cur:
             cur.execute(f"SELECT PostID,message,name FROM Posts WHERE PostID BETWEEN {min_id} AND {max_id};")
             res = cur.fetchall()
             conn.commit()
