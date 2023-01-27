@@ -63,5 +63,5 @@ with conn.cursor() as cur:
     # conn.commit()
     # print(res)
     
-    # cur.execute("DELETE FROM Posts WHERE PostID='0'")
-    # conn.commit()
+    cur.execute("DELETE FROM Posts WHERE PostID='7'")
+    conn.commit()

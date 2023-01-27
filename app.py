@@ -83,7 +83,7 @@ def post():
 
     except:
         conn.rollback()
-        L.info("Failed to add to db")
+        L.info(f"Failed to add to db {traceback.format_exc()}")
         return {"ret": False, "error":"dbwrite"}
     
     L.debug("Added to DB, Making image..")
