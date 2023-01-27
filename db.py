@@ -8,7 +8,7 @@ DATABASE_URL = config('DATABASE_URL')
 conn = psycopg.connect(DATABASE_URL)
 
 with conn.cursor() as cur:
-    cur.execute("DROP TABLE Posts;")
+    #cur.execute("DROP TABLE Posts;")
     cur.execute("""
         CREATE TABLE IF NOT EXISTS Posts (
             PostID INT PRIMARY KEY, 
@@ -19,29 +19,29 @@ with conn.cursor() as cur:
     """)
     conn.commit()
     
-    cur.execute("SELECT MAX(PostID) FROM Posts;")
-    res = cur.fetchall()
-    conn.commit()
-    print(res)
+    # cur.execute("SELECT MAX(PostID) FROM Posts;")
+    # res = cur.fetchall()
+    # conn.commit()
+    # print(res)
     
-    post_num = res[0][0]
-    if(post_num is None):
-        post_num = 0
-    else:
-        post_num = post_num+1
+    # post_num = res[0][0]
+    # if(post_num is None):
+    #     post_num = 0
+    # else:
+    #     post_num = post_num+1
 
     # cur.execute(f"INSERT INTO Posts ( PostID, message, name, reply_to) VALUES ( {post_num}, 'Heloo sadasd ', 'sadads', NULL ); ")
     # conn.commit()
     
     cur.execute("SELECT MAX(PostID) FROM Posts;")
     res = cur.fetchall()
-    conn.commit()
     print(res)
+    conn.commit()
     
-    cur.execute("SELECT * FROM Posts;")
-    res = cur.fetchall()
-    conn.commit()
-    print(res)
+    # cur.execute("SELECT * FROM Posts;")
+    # res = cur.fetchall()
+    # conn.commit()
+    # print(res)
     
     # cur.execute("""
         

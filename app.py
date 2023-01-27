@@ -26,17 +26,16 @@ limiter = Limiter(get_remote_address, app=app)
 
 # Login to DB
 conn = psycopg.connect(DATABASE_URL)
-with conn:
-    with conn.cursor() as cur:
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS Posts (
-                PostID INT PRIMARY KEY, 
-                message STRING NOT NULL, 
-                name STRING NOT NULL,
-                reply_to INT REFERENCES Posts(PostID) ON DELETE SET NULL
-            );
-        """)
-        conn.commit()
+with conn.cursor() as cur:
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS Posts (
+            PostID INT PRIMARY KEY, 
+            message STRING NOT NULL, 
+            name STRING NOT NULL,
+            reply_to INT REFERENCES Posts(PostID) ON DELETE SET NULL
+        );
+    """)
+    conn.commit()
 
 
 # Login to Instagram
@@ -68,24 +67,22 @@ def post():
     #add to DB
     L.debug("Adding to DB..")
     try:
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute("SELECT MAX(PostID) FROM Posts;")
-                res = cur.fetchall()
-                conn.commit()
-        
-        post_num = res[0][0]
-        if(post_num is None):
-            post_num = 0
-        else:
-            post_num = post_num+1
+        with conn.cursor() as cur:
+            cur.execute("SELECT MAX(PostID) FROM Posts;")
+            res = cur.fetchall()
 
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute(f"INSERT INTO Posts (PostID, message, name, reply_to) VALUES ( {post_num}, '{content['message']}', '{name}', NULL);")
-                conn.commit()
+        
+            post_num = res[0][0]
+            if(post_num is None):
+                post_num = 0
+            else:
+                post_num = post_num+1
+
+            cur.execute(f"INSERT INTO Posts (PostID, message, name, reply_to) VALUES ( {post_num}, '{content['message']}', '{name}', NULL);")
+            conn.commit()
 
     except:
+        conn.rollback()
         L.info("Failed to add to db")
         return {"ret": False, "error":"dbwrite"}
     
@@ -112,10 +109,14 @@ def post():
             if(i==0):
                 L.info(f"Failed to post image {traceback.format_exc()}")
                 os.remove(f"./temp/{post_str}.jpg")
-                with conn:
+                
+                try:
                     with conn.cursor() as cur:
                         cur.execute(f"DELETE FROM Posts WHERE PostID='{post_num}';")
                         conn.commit()
+                except:
+                    conn.rollback()
+                    
                 return {"ret": False, "error":"uploadfail"}
             else:
                 L.info(f"Retrying post again...")
@@ -134,27 +135,24 @@ def recents():
         return {"ret": False, "error":"nostartid"}
     
     try:
-        with conn:
-            with conn.cursor() as cur:
-                if(startid < 0):
-                    cur.execute("SELECT MAX(PostID) FROM Posts;")
-                    res = cur.fetchall()
-                    conn.commit()
-                    max_id = res[0][0]
-                    if(max_id is None):
-                        return {"ret": True}
-                else:
-                    max_id = startid
-                    
-                min_id = max( (max_id - 4) , 0)
-                
-        with conn:
-            with conn.cursor() as cur:
-                cur.execute(f"SELECT PostID,message,name FROM Posts WHERE PostID BETWEEN {min_id} AND {max_id};")
+        with conn.cursor() as cur:
+            if(startid < 0):
+                cur.execute("SELECT MAX(PostID) FROM Posts;")
                 res = cur.fetchall()
-                conn.commit()
+       
+                max_id = res[0][0]
+                if(max_id is None):
+                    return {"ret": True}
+            else:
+                max_id = startid
+                
+            min_id = max( (max_id - 4) , 0)
+            
+            cur.execute(f"SELECT PostID,message,name FROM Posts WHERE PostID BETWEEN {min_id} AND {max_id};")
+            conn.commit()
             
     except Exception as e:
+        conn.rollback()
         L.info(f"Failed to get from db {traceback.format_exc()}")
         return {"ret": False, "error":"dbfail"}
     
