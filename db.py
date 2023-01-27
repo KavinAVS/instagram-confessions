@@ -8,7 +8,7 @@ DATABASE_URL = config('DATABASE_URL')
 conn = psycopg.connect(DATABASE_URL)
 
 with conn.cursor() as cur:
-    #cur.execute("DROP TABLE Posts;")
+    cur.execute("DROP TABLE Posts;")
     cur.execute("""
         CREATE TABLE IF NOT EXISTS Posts (
             PostID INT PRIMARY KEY, 
