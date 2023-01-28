@@ -78,7 +78,7 @@ def post():
             else:
                 post_num = post_num+1
 
-            cur.execute(f"INSERT INTO Posts (PostID, message, name, reply_to) VALUES ( {post_num}, '{content['message']}', '{name}', NULL);")
+            cur.execute("INSERT INTO Posts (PostID, message, name, reply_to) VALUES ( %s, %s, %s, NULL);", (post_num, content['message'], name))
             conn.commit()
 
     except:
@@ -112,7 +112,7 @@ def post():
                 
                 try:
                     with conn.cursor() as cur:
-                        cur.execute(f"DELETE FROM Posts WHERE PostID='{post_num}';")
+                        cur.execute("DELETE FROM Posts WHERE PostID=%s;", (post_num,))
                         conn.commit()
                 except:
                     conn.rollback()
@@ -148,7 +148,7 @@ def recents():
                 
             min_id = max( (max_id - 4) , 0)
             
-            cur.execute(f"SELECT PostID,message,name FROM Posts WHERE PostID BETWEEN {min_id} AND {max_id};")
+            cur.execute("SELECT PostID,message,name FROM Posts WHERE PostID BETWEEN %s AND %s;", (min_id, max_id))
             res = cur.fetchall()
             conn.commit()
             
