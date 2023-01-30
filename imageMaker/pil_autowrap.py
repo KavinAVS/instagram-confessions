@@ -223,7 +223,7 @@ def fit_text(
 def make_text_image(text, name, post_num, bg_color, filename, width=1024, height=1024) -> None:
     """Generate test images for text auto-wrapping."""
 
-    font = ImageFont.truetype( os.path.join(os.path.dirname(__file__), "fonts/HelveticaNeueLight.ttf"), size=40)
+    font = ImageFont.truetype( os.path.join(os.path.dirname(__file__), "fonts/HelveticaNeueLight-Emoji.ttf"), size=40)
     
     with Image.new(
         mode="RGB", size=(width, height), color=bg_color
