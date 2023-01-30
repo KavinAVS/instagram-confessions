@@ -48,7 +48,7 @@ def main():
 
 
 @app.route('/', methods=["POST"])
-@limiter.limit("10/day")
+@limiter.limit("2/hour")
 def post():
     content = request.get_json(silent=True)
     
