@@ -138,7 +138,8 @@ def post():
 @app.route('/recents', methods=["GET"])
 def recents():
     global conn
-    L.debug("Request from (real client ip): " + request.headers.get('CF-Connecting-IP'))
+
+    L.debug(f"Request from (real client ip): {request.headers.get('CF-Connecting-IP')}")
     startid = int(request.args.get('startid'))
     
     if(startid is None):
