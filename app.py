@@ -11,6 +11,9 @@ from instagrapi import Client
 import psycopg
 import os
 
+from better_profanity import profanity
+profanity.load_censor_words_from_file('../profanity_wordlist.txt')
+
 DATABASE_URL = config('DATABASE_URL')
 INSTA_USER = config('INSTA_USER')
 INSTA_PWD = config('INSTA_PWD')
@@ -71,7 +74,10 @@ def post():
         return {"ret": False, "error":"nametoolong"}
     else:
         name = content["name"]
-        
+    
+    #filter profanity
+    message = profanity.censor(content['message'])
+    
     #add to DB
     L.debug("Adding to DB..")
     try:
@@ -86,7 +92,7 @@ def post():
             else:
                 post_num = post_num+1
 
-            cur.execute("INSERT INTO Posts (PostID, message, name, reply_to) VALUES ( %s, %s, %s, NULL);", (post_num, content['message'], name))
+            cur.execute("INSERT INTO Posts (PostID, message, name, reply_to) VALUES ( %s, %s, %s, NULL);", (post_num, message, name))
             conn.commit()
 
     except:
@@ -99,7 +105,7 @@ def post():
     #Make the image
     post_str=f"post#{post_num:05d}"
     try:
-        pilwrap.make_text_image(content["message"], name, post_str, (55, 118, 173), post_str)
+        pilwrap.make_text_image(message, name, post_str, (55, 118, 173), post_str)
     except Exception as e:
         L.info("Failed make image", e)
         return {"ret": False, "error":"makeimage"}
@@ -138,8 +144,6 @@ def post():
 @app.route('/recents', methods=["GET"])
 def recents():
     global conn
-
-    L.debug(f"Request from (real client ip): {request.headers.get('CF-Connecting-IP')}")
     startid = int(request.args.get('startid'))
     
     if(startid is None):
