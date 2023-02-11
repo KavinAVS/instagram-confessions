@@ -48,8 +48,11 @@ def main():
 
 
 @app.route('/', methods=["POST"])
-@limiter.limit("2/hour")
+@limiter.limit("5/hour")
+@limiter.limit("30/day")
 def post():
+    global conn
+    L.debug("Request from: " + get_remote_address())
     content = request.get_json(silent=True)
     
     if("message" not in content or content["message"] == ""):
@@ -129,6 +132,8 @@ def post():
 
 @app.route('/recents', methods=["GET"])
 def recents():
+    global conn
+    L.debug("Request from: " + get_remote_address())
     startid = int(request.args.get('startid'))
     
     if(startid is None):
@@ -151,7 +156,12 @@ def recents():
             cur.execute("SELECT PostID,message,name FROM Posts WHERE PostID BETWEEN %s AND %s;", (min_id, max_id))
             res = cur.fetchall()
             conn.commit()
-            
+    
+    except psycopg.OperationalError as e:
+        conn = psycopg.connect(DATABASE_URL)
+        L.info(f"Had to restart db connection {traceback.format_exc()}")
+        return {"ret": False, "error":"dbfail"}
+    
     except Exception as e:
         conn.rollback()
         L.info(f"Failed to get from db {traceback.format_exc()}")
