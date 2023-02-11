@@ -57,7 +57,7 @@ def main():
 @limiter.limit("30/day")
 def post():
     global conn
-    L.debug("Request from: " + get_remote_address())
+    L.debug(f"Request from (real client ip): {request.headers.get('CF-Connecting-IP')}")
     content = request.get_json(silent=True)
     
     if("message" not in content or content["message"] == ""):
