@@ -22,8 +22,13 @@ logging.getLogger('instagrapi').setLevel(logging.INFO)
 logging.getLogger('urllib3').setLevel(logging.INFO)
 
 app = Flask(__name__)
-limiter = Limiter(get_remote_address, app=app)
-
+if(PORT == 10000):
+    def check_client_ip():
+        return request.headers.get('CF-Connecting-IP')
+    limiter = Limiter(check_client_ip, app=app)
+else:
+    limiter = Limiter(get_remote_address, app=app)
+    
 # Login to DB
 conn = psycopg.connect(DATABASE_URL)
 with conn.cursor() as cur:
@@ -48,7 +53,7 @@ def main():
 
 
 @app.route('/', methods=["POST"])
-@limiter.limit("5/hour")
+@limiter.limit("10/hour")
 @limiter.limit("30/day")
 def post():
     global conn
@@ -133,7 +138,7 @@ def post():
 @app.route('/recents', methods=["GET"])
 def recents():
     global conn
-    L.debug("Request from: " + get_remote_address())
+    L.debug("Request from (real client ip): " + request.headers.get('CF-Connecting-IP'))
     startid = int(request.args.get('startid'))
     
     if(startid is None):
