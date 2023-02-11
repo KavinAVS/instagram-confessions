@@ -56,8 +56,8 @@ def main():
 
 
 @app.route('/', methods=["POST"])
-@limiter.limit("10/hour")
-@limiter.limit("30/day")
+@limiter.limit("2/hour")
+@limiter.limit("10/day")
 def post():
     global conn
     L.debug(f"Request from (real client ip): {request.headers.get('CF-Connecting-IP')}")
