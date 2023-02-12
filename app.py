@@ -25,9 +25,8 @@ logging.getLogger('instagrapi').setLevel(logging.INFO)
 logging.getLogger('urllib3').setLevel(logging.INFO)
 
 
-
 app = Flask(__name__)
-if(PORT == '80'):
+if(PORT == '10000'):
     def check_client_ip():
         return request.headers.get('CF-Connecting-IP')
     limiter = Limiter(check_client_ip, app=app)
