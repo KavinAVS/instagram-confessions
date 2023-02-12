@@ -24,14 +24,16 @@ L = logging.getLogger(__name__)
 logging.getLogger('instagrapi').setLevel(logging.INFO)
 logging.getLogger('urllib3').setLevel(logging.INFO)
 
+
+
 app = Flask(__name__)
-if(PORT == 10000):
+if(PORT == '80'):
     def check_client_ip():
         return request.headers.get('CF-Connecting-IP')
     limiter = Limiter(check_client_ip, app=app)
 else:
     limiter = Limiter(get_remote_address, app=app)
-    
+
 # Login to DB
 conn = psycopg.connect(DATABASE_URL)
 with conn.cursor() as cur:
