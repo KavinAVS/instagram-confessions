@@ -12,7 +12,7 @@ import psycopg
 import os
 
 from better_profanity import profanity
-profanity.load_censor_words_from_file('../profanity_wordlist.txt')
+profanity.load_censor_words_from_file('./profanity_wordlist.txt')
 
 DATABASE_URL = config('DATABASE_URL')
 INSTA_USER = config('INSTA_USER')
@@ -56,7 +56,7 @@ def main():
 
 
 @app.route('/', methods=["POST"])
-@limiter.limit("2/hour")
+@limiter.limit("1/hour")
 @limiter.limit("10/day")
 def post():
     global conn
